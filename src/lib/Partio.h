@@ -303,6 +303,7 @@ ParticlesInfo* readHeaders(const char* filename,const bool verbose=true,std::ost
 //! if filename ends with .gz or forceCompressed is true, the file is compressed.
 void write(const char* filename,const ParticlesData&,const bool forceCompressed=false,bool verbose=true,std::ostream& errorStream=std::cerr);
 
+void convert_xyz(const std::string &inputFileName, const std::string &outputFileName, float radius);
 //! Cached (only one copy) read only way to read a particle file
 /*!
   Loads a file read-only if not already in memory, otherwise returns

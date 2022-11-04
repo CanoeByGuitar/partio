@@ -34,19 +34,40 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 */
 #include <Partio.h>
 #include <iostream>
+#include <filesystem>
 
+namespace fs = std::__fs::filesystem;
 int main(int argc,char *argv[])
 {
+    // git@github.com:CanoeByGuitar/partio.git
     if(argc!=3){
-        std::cerr<<"Usage is: "<<argv[0]<<" <filename in> <filename out>"<<std::endl;
-        return 1;
+        // 新建用法解析(.xyz)
+        std::string inputDir = "/Users/wangchenhui/github/fluid-engine-dev/bin/hybrid_liquid_sim_output";
+        std::string outputDir = "/Users/wangchenhui/downloads/data/";
+        std::vector<std::string> fileNames;
+        for(const auto &entry : fs::directory_iterator(inputDir)){
+            fileNames.push_back(entry.path());
+        }
+        sort(fileNames.begin(), fileNames.end());
+        int frame = 0;
+        for(auto file : fileNames){
+            char basename[256];
+            snprintf(basename, sizeof(basename), "particles_%06d.bgeo", frame);
+            std::string outputPath = outputDir + basename;
+            Partio::convert_xyz(file, outputPath, 2.5);
+            frame++;
+            std::cout << frame << std::endl;
+        }
+
+    }else{
+        // 原项目用法
+        Partio::ParticlesData* p=Partio::read(argv[1]);
+        if(p){
+            Partio::print(p);
+            Partio::write(argv[2],*p);
+            p->release();
+        }
     }
-    Partio::ParticlesData* p=Partio::read(argv[1]);
-    if(p){
-        Partio::print(p);
-        Partio::write(argv[2],*p);
-        p->release();
-    }
-    
     return 0;
+
 }

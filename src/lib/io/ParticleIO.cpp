@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 */
 
 #include <iostream>
+#include <fstream>
 #include "../core/Mutex.h"
 #include "../Partio.h"
 #include "readers.h"
@@ -175,6 +176,58 @@ write(const char* c_filename,const ParticlesData& particles,const bool forceComp
         return;
     }
     (*i->second)(c_filename,particles,forceCompressed || endsWithGz,verbose ? &errorStream : 0);
+}
+
+void convert_xyz(const std::string &inputFileName, const std::string &outputFileName, float radius){
+    Partio::ParticlesDataMutable& particleData = *Partio::create();
+    Partio::ParticleAttribute posAttr = particleData.addAttribute("position", Partio::VECTOR, 3);
+    Partio::ParticleAttribute velAttr;
+    Partio::ParticleAttribute scaleAttr;
+    if(radius != 0.0) scaleAttr = particleData.addAttribute("pscale", Partio::FLOAT, 1);
+    Partio::ParticleAttribute idAttr = particleData.addAttribute("id", Partio::INT, 1);
+
+    std::ifstream infile;
+    infile.open(inputFileName.data());
+    assert(infile.is_open());
+
+    std::string s;
+    string delimiter = " ";
+    int cnt = 0;
+    // 文本中的每行
+    while(getline(infile, s)){
+        vector<string> vec;
+        size_t p = 0;
+        string temp;
+        int k = 0;
+
+        Partio::ParticleIndex index = particleData.addParticle();
+        float* pos = particleData.dataWrite<float>(posAttr, index);
+        int* id = particleData.dataWrite<int>(idAttr, index);
+
+        // 每行中有3个float XYZ
+        while((p = s.find(' ')) != string::npos){
+            if(k < 2){
+                pos[k++] =(float) stof(s.substr(0, p));
+                s.erase(0, p + delimiter.length());
+//                std::cout << stof(s.substr(0, p)) << " ";
+            }
+        }
+        pos[2] =(float) stof(s);
+//        std::cout << stof(s) << std::endl;
+
+        // radius
+        if (radius != 0.0)
+        {
+            float* scale = particleData.dataWrite<float>(scaleAttr, index);
+            scale[0] = (float)radius;
+        }
+
+        // index
+        id[0] = cnt;
+        cnt++;
+    }
+    Partio::write(outputFileName.c_str(), particleData, false);
+    particleData.release();
 }
 
 } // namespace Partio
