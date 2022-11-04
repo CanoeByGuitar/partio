@@ -4,6 +4,23 @@ This is the initial source code release of partio a tool we used for particle
 reading/writing. It started out as an abstraction for the commonalities in
 particle models (i.e. accessing many attributes associated with an index or
 entity).
+# private modification 个人修改
+This is a modification of original Partio for  personal use. The *.xyz file is 
+now supported to be converted to any other popular particle file format(.geo/.bgeo etc)
+To be noticed *.xyz can be named in any other postfix what ever you like only if:
+1. The file is ASCII text file
+2. Three float in a line and the delimiter is " "(one blank) without blank in
+the end of a line
+
+# Usage
+After building the project. Modify the content in
+`tools/partconvert.cpp`
+
+You need to change the inputDir and the outputDir in this file.
+Make sure files in inputDir is all *.xyz files.
+
+
+
 
 # Super impatient building guide
 

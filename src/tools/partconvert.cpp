@@ -39,7 +39,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
 namespace fs = std::__fs::filesystem;
 int main(int argc,char *argv[])
 {
-    // git@github.com:CanoeByGuitar/partio.git
     if(argc!=3){
         // 新建用法解析(.xyz)
         std::string inputDir = "/Users/wangchenhui/github/fluid-engine-dev/bin/hybrid_liquid_sim_output";
